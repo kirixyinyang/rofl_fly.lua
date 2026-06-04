@@ -1,7 +1,6 @@
--- J.A.R.V.I.S | Main Loader
--- Загружает fly.lua и другие модули
+-- J.A.R.V.I.S | Main Loader for rofl_fly.lua
 
-local repo = "https://raw.githubusercontent.com/kirixyinyang/mm2_script.lua/refs/heads/main/"
+local repo = "https://raw.githubusercontent.com/kirixyinyang/rofl_fly.lua/refs/heads/main/"
 
 local function loadModule(name)
     local url = repo .. name
@@ -22,11 +21,10 @@ local function loadModule(name)
     end
 end
 
--- Загружаем fly.lua
 local fly = loadModule("fly.lua")
 if fly then
     fly()
     print("✅ J.A.R.V.I.S | Fly module loaded")
 else
-    warn("❌ Failed to load fly.lua")
+    warn("❌ Failed to load fly.lua from rofl_fly.lua")
 end
