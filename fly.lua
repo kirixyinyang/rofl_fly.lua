@@ -7,171 +7,158 @@ local player = Players.LocalPlayer
 local playerGui = player.PlayerGui
 
 -- ==============================
--- СОЗДАНИЕ GUI
+-- НАЧАЛЬНЫЙ ЭКРАН
 -- ==============================
-local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "FlightGui"
-screenGui.ResetOnSpawn = false
-screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-screenGui.Parent = playerGui
+local splashGui = Instance.new("ScreenGui")
+splashGui.Name = "SplashGui"
+splashGui.ResetOnSpawn = false
+splashGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+splashGui.Parent = playerGui
 
--- ==============================
--- ЭКРАН ЗАГРУЗКИ (чёрный фон)
--- ==============================
-local loadFrame = Instance.new("Frame")
-loadFrame.Size = UDim2.new(1, 0, 1, 0)
-loadFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-loadFrame.ZIndex = 10
-loadFrame.Parent = screenGui
+local blackBg = Instance.new("Frame")
+blackBg.Size = UDim2.new(1, 0, 1, 0)
+blackBg.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+blackBg.BackgroundTransparency = 0
+blackBg.Parent = splashGui
 
-local codeLabel = Instance.new("TextLabel")
-codeLabel.Size = UDim2.new(1, -40, 0.6, 0)
-codeLabel.Position = UDim2.new(0, 20, 0.1, 0)
-codeLabel.BackgroundTransparency = 1
-codeLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-codeLabel.TextScaled = true
-codeLabel.Font = Enum.Font.Code
-codeLabel.TextXAlignment = Enum.TextXAlignment.Left
-codeLabel.TextYAlignment = Enum.TextYAlignment.Top
-codeLabel.ZIndex = 11
-codeLabel.Parent = loadFrame
+-- Анимация появления текста
+local mainText = Instance.new("TextLabel")
+mainText.Size = UDim2.new(1, 0, 0.7, 0)
+mainText.Position = UDim2.new(0, 0, 0.15, 0)
+mainText.BackgroundTransparency = 1
+mainText.Text = ""
+mainText.TextColor3 = Color3.fromRGB(80, 255, 100)
+mainText.TextSize = 50
+mainText.Font = Enum.Font.GothamBold
+mainText.TextScaled = true
+mainText.Parent = blackBg
 
-local byLabel = Instance.new("TextLabel")
-byLabel.Size = UDim2.new(1, 0, 0.06, 0)
-byLabel.Position = UDim2.new(0, 0, 0.82, 0)
-byLabel.BackgroundTransparency = 1
-byLabel.TextColor3 = Color3.fromRGB(180, 180, 180)
-byLabel.Text = "by Murd"
-byLabel.TextScaled = true
-byLabel.Font = Enum.Font.Code
-byLabel.ZIndex = 11
-byLabel.Parent = loadFrame
+-- Подпись by Murd
+local footer = Instance.new("TextLabel")
+footer.Size = UDim2.new(1, 0, 0, 60)
+footer.Position = UDim2.new(0, 0, 0.8, 0)
+footer.BackgroundTransparency = 1
+footer.Text = "by Murd"
+footer.TextColor3 = Color3.fromRGB(255, 80, 80)
+footer.TextSize = 24
+footer.Font = Enum.Font.GothamBold
+footer.TextScaled = true
+footer.Parent = blackBg
 
-local closeBtn = Instance.new("TextButton")
-closeBtn.Size = UDim2.new(0.3, 0, 0.07, 0)
-closeBtn.Position = UDim2.new(0.35, 0, 0.91, 0)
-closeBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-closeBtn.BorderSizePixel = 1
-closeBtn.BorderColor3 = Color3.fromRGB(255, 255, 255)
-closeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-closeBtn.Text = "[ ЗАКРЫТЬ ]"
-closeBtn.TextScaled = true
-closeBtn.Font = Enum.Font.Code
-closeBtn.ZIndex = 11
-closeBtn.Parent = loadFrame
+-- Кнопка ЗАКРЫТЬ
+local closeSplashBtn = Instance.new("TextButton")
+closeSplashBtn.Size = UDim2.new(0, 160, 0, 50)
+closeSplashBtn.Position = UDim2.new(0.5, -80, 0.92, 0)
+closeSplashBtn.BackgroundColor3 = Color3.fromRGB(80, 255, 100)
+closeSplashBtn.BackgroundTransparency = 0.3
+closeSplashBtn.Text = "ЗАКРЫТЬ"
+closeSplashBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeSplashBtn.TextSize = 18
+closeSplashBtn.Font = Enum.Font.GothamBold
+closeSplashBtn.Parent = blackBg
 
-local btnCorner = Instance.new("UICorner")
-btnCorner.CornerRadius = UDim.new(0, 4)
-btnCorner.Parent = closeBtn
+local closeCorner = Instance.new("UICorner")
+closeCorner.CornerRadius = UDim.new(0, 10)
+closeCorner.Parent = closeSplashBtn
 
--- ==============================
--- АНИМАЦИЯ ПЕЧАТАНИЯ КОДА
--- ==============================
-local codeText = [[-- FlightSystem v2.0
--- by Murd
-
-local flying = false
-local speed = 60
-
-local function startFly()
-    flying = true
-    bodyVelocity = Instance.new(
-        "BodyVelocity")
-    bodyVelocity.MaxForce =
-        Vector3.new(1e5,1e5,1e5)
-    bodyVelocity.Parent = rootPart
-    flyTrack:Play()
-end
-
-local function stopFly()
-    flying = false
-    bodyVelocity:Destroy()
-    flyTrack:Stop()
-end
-
--- Нажми на кнопку для полёта
--- Загрузка завершена...]]
-
-local function typewriterEffect(text, label, callback)
-    label.Text = ""
-    local i = 0
-    local connection
-    connection = RunService.Heartbeat:Connect(function()
-        i = i + 1
-        if i <= #text then
-            label.Text = string.sub(text, 1, i)
-        else
-            connection:Disconnect()
-            if callback then callback() end
-        end
-    end)
-end
+-- Анимация печатания текста
+local fullText = "ПЖ АДМИНКУ"
+local charIndex = 0
+local typewriter = RunService.Heartbeat:Connect(function()
+    charIndex = charIndex + 1
+    if charIndex <= #fullText then
+        mainText.Text = string.sub(fullText, 1, charIndex)
+    else
+        typewriter:Disconnect()
+    end
+end)
 
 -- ==============================
--- ПАНЕЛЬ ПОЛЁТА
+-- ОСНОВНОЙ GUI ПОСЛЕ ЗАКРЫТИЯ
 -- ==============================
-local flightPanel = Instance.new("Frame")
-flightPanel.Size = UDim2.new(0, 260, 0, 200)
-flightPanel.Position = UDim2.new(0.5, -130, 0.5, -100)
-flightPanel.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-flightPanel.BorderSizePixel = 0
-flightPanel.Visible = false
-flightPanel.Active = true
-flightPanel.Draggable = true
-flightPanel.ZIndex = 5
-flightPanel.Parent = screenGui
+local mainGui = Instance.new("ScreenGui")
+mainGui.Name = "FlightGui"
+mainGui.ResetOnSpawn = false
+mainGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+mainGui.Parent = playerGui
+mainGui.Visible = false
+
+-- ==============================
+-- ПАНЕЛЬ УПРАВЛЕНИЯ
+-- ==============================
+local controlPanel = Instance.new("Frame")
+controlPanel.Size = UDim2.new(0, 250, 0, 140)
+controlPanel.Position = UDim2.new(0.5, -125, 0.5, -70)
+controlPanel.BackgroundColor3 = Color3.fromRGB(15, 20, 18)
+controlPanel.BackgroundTransparency = 0.1
+controlPanel.BorderSizePixel = 0
+controlPanel.Parent = mainGui
 
 local panelCorner = Instance.new("UICorner")
-panelCorner.CornerRadius = UDim.new(0, 8)
-panelCorner.Parent = flightPanel
+panelCorner.CornerRadius = UDim.new(0, 10)
+panelCorner.Parent = controlPanel
 
 local panelStroke = Instance.new("UIStroke")
 panelStroke.Color = Color3.fromRGB(60, 60, 60)
 panelStroke.Thickness = 1
-panelStroke.Parent = flightPanel
+panelStroke.Parent = controlPanel
 
-local panelTitle = Instance.new("TextLabel")
-panelTitle.Size = UDim2.new(1, 0, 0, 28)
-panelTitle.Position = UDim2.new(0, 0, 0, 0)
-panelTitle.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-panelTitle.BorderSizePixel = 0
-panelTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
-panelTitle.Text = "✈  FLIGHT  |  by Murd"
-panelTitle.TextScaled = true
-panelTitle.Font = Enum.Font.Code
-panelTitle.ZIndex = 6
-panelTitle.Parent = flightPanel
+-- Заголовок
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 30)
+title.Position = UDim2.new(0, 0, 0, 0)
+title.BackgroundColor3 = Color3.fromRGB(25, 35, 30)
+title.BackgroundTransparency = 0.1
+title.Text = "ROFL  |  FLY"
+title.TextColor3 = Color3.fromRGB(80, 255, 100)
+title.TextSize = 14
+title.Font = Enum.Font.GothamBold
+title.Parent = controlPanel
 
 local titleCorner = Instance.new("UICorner")
-titleCorner.CornerRadius = UDim.new(0, 8)
-titleCorner.Parent = panelTitle
+titleCorner.CornerRadius = UDim.new(0, 10)
+titleCorner.Parent = title
+
+-- Кнопка закрыть панель
+local closePanelBtn = Instance.new("TextButton")
+closePanelBtn.Size = UDim2.new(0, 25, 0, 25)
+closePanelBtn.Position = UDim2.new(1, -30, 0, 2)
+closePanelBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+closePanelBtn.BackgroundTransparency = 0.3
+closePanelBtn.Text = "X"
+closePanelBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+closePanelBtn.TextSize = 12
+closePanelBtn.Font = Enum.Font.GothamBold
+closePanelBtn.Parent = controlPanel
+
+local closeCorner2 = Instance.new("UICorner")
+closeCorner2.CornerRadius = UDim.new(0, 8)
+closeCorner2.Parent = closePanelBtn
 
 -- ==============================
--- ГАЛОЧКА ВКЛЮЧЕНИЯ ПОЛЁТА
+-- ВКЛЮЧЕНИЕ ПОЛЁТА (ГАЛОЧКА)
 -- ==============================
 local toggleLabel = Instance.new("TextLabel")
 toggleLabel.Size = UDim2.new(0, 80, 0, 30)
-toggleLabel.Position = UDim2.new(0, 10, 0, 38)
+toggleLabel.Position = UDim2.new(0, 10, 0, 40)
 toggleLabel.BackgroundTransparency = 1
+toggleLabel.Text = "ПОЛЁТ:"
 toggleLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
-toggleLabel.Text = "Полёт:"
-toggleLabel.TextScaled = true
-toggleLabel.Font = Enum.Font.Code
+toggleLabel.TextSize = 12
+toggleLabel.Font = Enum.Font.GothamBold
 toggleLabel.TextXAlignment = Enum.TextXAlignment.Left
-toggleLabel.ZIndex = 6
-toggleLabel.Parent = flightPanel
+toggleLabel.Parent = controlPanel
 
 local toggleBtn = Instance.new("TextButton")
 toggleBtn.Size = UDim2.new(0, 30, 0, 30)
-toggleBtn.Position = UDim2.new(0, 95, 0, 38)
+toggleBtn.Position = UDim2.new(0, 95, 0, 40)
 toggleBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 toggleBtn.BorderSizePixel = 0
-toggleBtn.Text = "✗"
+toggleBtn.Text = "OFF"
 toggleBtn.TextColor3 = Color3.fromRGB(255, 80, 80)
-toggleBtn.TextScaled = true
-toggleBtn.Font = Enum.Font.Code
-toggleBtn.ZIndex = 6
-toggleBtn.Parent = flightPanel
+toggleBtn.TextSize = 10
+toggleBtn.Font = Enum.Font.GothamBold
+toggleBtn.Parent = controlPanel
 
 local toggleCorner = Instance.new("UICorner")
 toggleCorner.CornerRadius = UDim.new(0, 4)
@@ -182,27 +169,25 @@ toggleCorner.Parent = toggleBtn
 -- ==============================
 local speedLabel = Instance.new("TextLabel")
 speedLabel.Size = UDim2.new(0, 80, 0, 30)
-speedLabel.Position = UDim2.new(0, 10, 0, 78)
+speedLabel.Position = UDim2.new(0, 10, 0, 80)
 speedLabel.BackgroundTransparency = 1
+speedLabel.Text = "СКОРОСТЬ:"
 speedLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
-speedLabel.Text = "Скорость:"
-speedLabel.TextScaled = true
-speedLabel.Font = Enum.Font.Code
+speedLabel.TextSize = 12
+speedLabel.Font = Enum.Font.GothamBold
 speedLabel.TextXAlignment = Enum.TextXAlignment.Left
-speedLabel.ZIndex = 6
-speedLabel.Parent = flightPanel
+speedLabel.Parent = controlPanel
 
 local minusBtn = Instance.new("TextButton")
 minusBtn.Size = UDim2.new(0, 30, 0, 30)
-minusBtn.Position = UDim2.new(0, 95, 0, 78)
+minusBtn.Position = UDim2.new(0, 95, 0, 80)
 minusBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 minusBtn.BorderSizePixel = 0
-minusBtn.Text = "−"
+minusBtn.Text = "-"
 minusBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-minusBtn.TextScaled = true
-minusBtn.Font = Enum.Font.Code
-minusBtn.ZIndex = 6
-minusBtn.Parent = flightPanel
+minusBtn.TextSize = 16
+minusBtn.Font = Enum.Font.GothamBold
+minusBtn.Parent = controlPanel
 
 local minusCorner = Instance.new("UICorner")
 minusCorner.CornerRadius = UDim.new(0, 4)
@@ -210,158 +195,136 @@ minusCorner.Parent = minusBtn
 
 local speedValue = Instance.new("TextLabel")
 speedValue.Size = UDim2.new(0, 50, 0, 30)
-speedValue.Position = UDim2.new(0, 130, 0, 78)
+speedValue.Position = UDim2.new(0, 130, 0, 80)
 speedValue.BackgroundTransparency = 1
+speedValue.Text = "50"
 speedValue.TextColor3 = Color3.fromRGB(255, 255, 255)
-speedValue.Text = "60"
-speedValue.TextScaled = true
-speedValue.Font = Enum.Font.Code
-speedValue.ZIndex = 6
-speedValue.Parent = flightPanel
+speedValue.TextSize = 14
+speedValue.Font = Enum.Font.GothamBold
+speedValue.Parent = controlPanel
 
 local plusBtn = Instance.new("TextButton")
 plusBtn.Size = UDim2.new(0, 30, 0, 30)
-plusBtn.Position = UDim2.new(0, 185, 0, 78)
+plusBtn.Position = UDim2.new(0, 185, 0, 80)
 plusBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 plusBtn.BorderSizePixel = 0
 plusBtn.Text = "+"
 plusBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-plusBtn.TextScaled = true
-plusBtn.Font = Enum.Font.Code
-plusBtn.ZIndex = 6
-plusBtn.Parent = flightPanel
+plusBtn.TextSize = 16
+plusBtn.Font = Enum.Font.GothamBold
+plusBtn.Parent = controlPanel
 
 local plusCorner = Instance.new("UICorner")
 plusCorner.CornerRadius = UDim.new(0, 4)
 plusCorner.Parent = plusBtn
 
 -- ==============================
--- СЕНСОРНЫЕ КНОПКИ ДЛЯ ТЕЛЕФОНА
+-- ДЖОЙСТИК (ТОЛЬКО ДЛЯ ТЕЛЕФОНА)
 -- ==============================
-local moveUpBtn = Instance.new("TextButton")
-moveUpBtn.Size = UDim2.new(0, 60, 0, 60)
-moveUpBtn.Position = UDim2.new(0.3, -30, 0.85, 0)
-moveUpBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
-moveUpBtn.BorderSizePixel = 0
-moveUpBtn.Text = "⬆"
-moveUpBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-moveUpBtn.TextSize = 30
-moveUpBtn.Font = Enum.Font.Code
-moveUpBtn.ZIndex = 6
-moveUpBtn.Visible = false
-moveUpBtn.Parent = flightPanel
+local joystickBg = Instance.new("ImageLabel")
+joystickBg.Size = UDim2.new(0, 120, 0, 120)
+joystickBg.Position = UDim2.new(0.1, 0, 0.75, 0)
+joystickBg.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+joystickBg.BackgroundTransparency = 0.5
+joystickBg.Image = "rbxassetid://15097438680"
+joystickBg.ImageColor3 = Color3.fromRGB(80, 255, 100)
+joystickBg.ImageTransparency = 0.7
+joystickBg.Visible = false
+joystickBg.Parent = mainGui
 
-local moveUpCorner = Instance.new("UICorner")
-moveUpCorner.CornerRadius = UDim.new(1, 0)
-moveUpCorner.Parent = moveUpBtn
+local joystickKnob = Instance.new("ImageLabel")
+joystickKnob.Size = UDim2.new(0, 40, 0, 40)
+joystickKnob.Position = UDim2.new(0.5, -20, 0.5, -20)
+joystickKnob.BackgroundColor3 = Color3.fromRGB(80, 255, 100)
+joystickKnob.BackgroundTransparency = 0.3
+joystickKnob.Image = "rbxassetid://15097438680"
+joystickKnob.ImageColor3 = Color3.fromRGB(255, 255, 255)
+joystickKnob.Parent = joystickBg
 
-local moveDownBtn = Instance.new("TextButton")
-moveDownBtn.Size = UDim2.new(0, 60, 0, 60)
-moveDownBtn.Position = UDim2.new(0.3, -30, 0.85, 0)
-moveDownBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
-moveDownBtn.BorderSizePixel = 0
-moveDownBtn.Text = "⬇"
-moveDownBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-moveDownBtn.TextSize = 30
-moveDownBtn.Font = Enum.Font.Code
-moveDownBtn.ZIndex = 6
-moveDownBtn.Visible = false
-moveDownBtn.Parent = flightPanel
+local joystickActive = false
+local joystickStartPos = Vector2.zero
+local joystickVector = Vector2.zero
+local joystickRadius = 40
 
-local moveDownCorner = Instance.new("UICorner")
-moveDownCorner.CornerRadius = UDim.new(1, 0)
-moveDownCorner.Parent = moveDownBtn
+-- Кнопки вверх/вниз (отдельно)
+local upBtn = Instance.new("TextButton")
+upBtn.Size = UDim2.new(0, 60, 0, 60)
+upBtn.Position = UDim2.new(0.85, -30, 0.75, 0)
+upBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+upBtn.BackgroundTransparency = 0.3
+upBtn.Text = "⬆"
+upBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+upBtn.TextSize = 30
+upBtn.Font = Enum.Font.GothamBold
+upBtn.Visible = false
+upBtn.Parent = mainGui
 
-local moveLeftBtn = Instance.new("TextButton")
-moveLeftBtn.Size = UDim2.new(0, 60, 0, 60)
-moveLeftBtn.Position = UDim2.new(0.15, 0, 0.85, 0)
-moveLeftBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
-moveLeftBtn.BorderSizePixel = 0
-moveLeftBtn.Text = "⬅"
-moveLeftBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-moveLeftBtn.TextSize = 30
-moveLeftBtn.Font = Enum.Font.Code
-moveLeftBtn.ZIndex = 6
-moveLeftBtn.Visible = false
-moveLeftBtn.Parent = flightPanel
+local upCorner = Instance.new("UICorner")
+upCorner.CornerRadius = UDim.new(1, 0)
+upCorner.Parent = upBtn
 
-local moveLeftCorner = Instance.new("UICorner")
-moveLeftCorner.CornerRadius = UDim.new(1, 0)
-moveLeftCorner.Parent = moveLeftBtn
+local downBtn = Instance.new("TextButton")
+downBtn.Size = UDim2.new(0, 60, 0, 60)
+downBtn.Position = UDim2.new(0.85, -30, 0.87, 0)
+downBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+downBtn.BackgroundTransparency = 0.3
+downBtn.Text = "⬇"
+downBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+downBtn.TextSize = 30
+downBtn.Font = Enum.Font.GothamBold
+downBtn.Visible = false
+downBtn.Parent = mainGui
 
-local moveRightBtn = Instance.new("TextButton")
-moveRightBtn.Size = UDim2.new(0, 60, 0, 60)
-moveRightBtn.Position = UDim2.new(0.45, 0, 0.85, 0)
-moveRightBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
-moveRightBtn.BorderSizePixel = 0
-moveRightBtn.Text = "➡"
-moveRightBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-moveRightBtn.TextSize = 30
-moveRightBtn.Font = Enum.Font.Code
-moveRightBtn.ZIndex = 6
-moveRightBtn.Visible = false
-moveRightBtn.Parent = flightPanel
-
-local moveRightCorner = Instance.new("UICorner")
-moveRightCorner.CornerRadius = UDim.new(1, 0)
-moveRightCorner.Parent = moveRightBtn
-
-local moveForwardBtn = Instance.new("TextButton")
-moveForwardBtn.Size = UDim2.new(0, 60, 0, 60)
-moveForwardBtn.Position = UDim2.new(0.3, -30, 0.75, 0)
-moveForwardBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
-moveForwardBtn.BorderSizePixel = 0
-moveForwardBtn.Text = "⬆⬆"
-moveForwardBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-moveForwardBtn.TextSize = 24
-moveForwardBtn.Font = Enum.Font.Code
-moveForwardBtn.ZIndex = 6
-moveForwardBtn.Visible = false
-moveForwardBtn.Parent = flightPanel
-
-local moveForwardCorner = Instance.new("UICorner")
-moveForwardCorner.CornerRadius = UDim.new(1, 0)
-moveForwardCorner.Parent = moveForwardBtn
+local downCorner = Instance.new("UICorner")
+downCorner.CornerRadius = UDim.new(1, 0)
+downCorner.Parent = downBtn
 
 -- ==============================
--- ЛОГИКА ПОЛЁТА
+-- ЛОГИКА ДЖОЙСТИКА
+-- ==============================
+local function updateJoystick(inputPos)
+    local delta = inputPos - joystickStartPos
+    local distance = math.min(delta.Magnitude, joystickRadius)
+    local direction = delta.Unit
+    joystickVector = direction * (distance / joystickRadius)
+    
+    local knobPos = joystickVector * joystickRadius
+    joystickKnob.Position = UDim2.new(0.5, knobPos.X - 20, 0.5, knobPos.Y - 20)
+end
+
+joystickBg.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.Touch then
+        joystickActive = true
+        joystickStartPos = input.Position
+        updateJoystick(input.Position)
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if joystickActive and input.UserInputType == Enum.UserInputType.Touch then
+        updateJoystick(input.Position)
+    end
+end)
+
+UserInputService.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.Touch and joystickActive then
+        joystickActive = false
+        joystickVector = Vector2.zero
+        joystickKnob.Position = UDim2.new(0.5, -20, 0.5, -20)
+    end
+end)
+
+-- ==============================
+-- ПОЛЁТ
 -- ==============================
 local character = player.Character or player.CharacterAdded:Wait()
 local humanoid = character:WaitForChild("Humanoid")
 local rootPart = character:WaitForChild("HumanoidRootPart")
 
 local flying = false
-local speed = 60
-local moveVector = Vector3.zero
+local speed = 50
+local vertical = 0
 local bodyVelocity, bodyGyro
-
-local function updateMoveVector()
-    if not flying then return end
-    local camera = workspace.CurrentCamera
-    local dir = Vector3.zero
-    
-    if moveForwardBtn.Visible and moveForwardBtn.Text == "⬆⬆" then
-        dir = dir + camera.CFrame.LookVector
-    end
-    if moveLeftBtn.Visible and moveLeftBtn.Text == "⬅" then
-        dir = dir - camera.CFrame.RightVector
-    end
-    if moveRightBtn.Visible and moveRightBtn.Text == "➡" then
-        dir = dir + camera.CFrame.RightVector
-    end
-    if moveUpBtn.Visible and moveUpBtn.Text == "⬆" then
-        dir = dir + Vector3.new(0, 1, 0)
-    end
-    if moveDownBtn.Visible and moveDownBtn.Text == "⬇" then
-        dir = dir + Vector3.new(0, -1, 0)
-    end
-    
-    if dir.Magnitude > 0 then
-        moveVector = dir.Unit * speed
-    else
-        moveVector = Vector3.zero
-    end
-end
 
 local function startFly()
     flying = true
@@ -376,20 +339,14 @@ local function startFly()
     bodyGyro.P = 1e4
     bodyGyro.Parent = rootPart
     
-    toggleBtn.Text = "✓"
+    toggleBtn.Text = "ON"
     toggleBtn.TextColor3 = Color3.fromRGB(80, 255, 120)
     toggleBtn.BackgroundColor3 = Color3.fromRGB(20, 50, 25)
     
-    -- Показываем сенсорные кнопки
-    moveUpBtn.Visible = true
-    moveDownBtn.Visible = true
-    moveLeftBtn.Visible = true
-    moveRightBtn.Visible = true
-    moveForwardBtn.Visible = true
-    
-    TweenService:Create(workspace.CurrentCamera,
-        TweenInfo.new(0.4, Enum.EasingStyle.Sine),
-        {FieldOfView = 80}):Play()
+    -- Показываем джойстик и кнопки
+    joystickBg.Visible = true
+    upBtn.Visible = true
+    downBtn.Visible = true
 end
 
 local function stopFly()
@@ -399,97 +356,117 @@ local function stopFly()
     if bodyVelocity then bodyVelocity:Destroy() end
     if bodyGyro then bodyGyro:Destroy() end
     
-    toggleBtn.Text = "✗"
+    toggleBtn.Text = "OFF"
     toggleBtn.TextColor3 = Color3.fromRGB(255, 80, 80)
     toggleBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
     
-    -- Скрываем сенсорные кнопки
-    moveUpBtn.Visible = false
-    moveDownBtn.Visible = false
-    moveLeftBtn.Visible = false
-    moveRightBtn.Visible = false
-    moveForwardBtn.Visible = false
-    
-    TweenService:Create(workspace.CurrentCamera,
-        TweenInfo.new(0.4, Enum.EasingStyle.Sine),
-        {FieldOfView = 70}):Play()
+    -- Скрываем джойстик и кнопки
+    joystickBg.Visible = false
+    upBtn.Visible = false
+    downBtn.Visible = false
 end
 
--- Нажатия на сенсорные кнопки (для телефона)
-moveForwardBtn.MouseButton1Click:Connect(function()
-    moveForwardBtn.Text = moveForwardBtn.Text == "⬆⬆" and "⬆" or "⬆⬆"
-end)
-
-moveLeftBtn.MouseButton1Click:Connect(function()
-    moveLeftBtn.Text = moveLeftBtn.Text == "⬅" and "⬅⬅" or "⬅"
-end)
-
-moveRightBtn.MouseButton1Click:Connect(function()
-    moveRightBtn.Text = moveRightBtn.Text == "➡" and "➡➡" or "➡"
-end)
-
-moveUpBtn.MouseButton1Click:Connect(function()
-    -- просто для обратной связи
-end)
-
-moveDownBtn.MouseButton1Click:Connect(function()
-    -- просто для обратной связи
-end)
-
--- Галочка
 toggleBtn.MouseButton1Click:Connect(function()
     if flying then stopFly() else startFly() end
 end)
 
 -- Скорость
 minusBtn.MouseButton1Click:Connect(function()
-    speed = math.max(10, speed - 10)
+    speed = math.max(20, speed - 10)
     speedValue.Text = tostring(speed)
 end)
 
 plusBtn.MouseButton1Click:Connect(function()
-    speed = math.min(200, speed + 10)
+    speed = math.min(150, speed + 10)
     speedValue.Text = tostring(speed)
 end)
 
--- Движение
+-- Управление джойстиком и кнопками
+upBtn.MouseButton1Click:Connect(function()
+    vertical = 1
+    task.wait(0.1)
+    vertical = 0
+end)
+
+downBtn.MouseButton1Click:Connect(function()
+    vertical = -1
+    task.wait(0.1)
+    vertical = 0
+end)
+
+-- Основной цикл движения
 RunService.Heartbeat:Connect(function()
     if not flying then return end
-    updateMoveVector()
-    if bodyVelocity then
-        bodyVelocity.Velocity = moveVector
+    
+    local camera = workspace.CurrentCamera
+    local moveDir = Vector3.zero
+    
+    -- Джойстик даёт влево/вправо и вперёд/назад
+    if joystickActive then
+        moveDir = moveDir + camera.CFrame.LookVector * joystickVector.Y
+        moveDir = moveDir + camera.CFrame.RightVector * joystickVector.X
     end
+    
+    -- Вертикаль от кнопок
+    moveDir = moveDir + Vector3.new(0, vertical, 0)
+    
+    if moveDir.Magnitude > 0 then
+        bodyVelocity.Velocity = moveDir.Unit * speed
+    else
+        bodyVelocity.Velocity = Vector3.zero
+    end
+    
     if bodyGyro then
-        bodyGyro.CFrame = workspace.CurrentCamera.CFrame
+        bodyGyro.CFrame = camera.CFrame
     end
 end)
 
--- ==============================
--- ЗАПУСК: анимация при входе
--- ==============================
-task.wait(0.5)
-typewriterEffect(codeText, codeLabel, function() end)
+-- Перетаскивание панели
+local dragging = false
+local dragStart, panelStart
 
-closeBtn.MouseButton1Click:Connect(function()
-    TweenService:Create(loadFrame,
-        TweenInfo.new(0.5, Enum.EasingStyle.Sine),
-        {BackgroundTransparency = 1}):Play()
-    
-    codeLabel.Visible = false
-    byLabel.Visible = false
-    closeBtn.Visible = false
-    
-    task.wait(0.5)
-    loadFrame.Visible = false
-    
-    flightPanel.Visible = true
-    flightPanel.Size = UDim2.new(0, 0, 0, 0)
-    flightPanel.Position = UDim2.new(0.5, 0, 0.5, 0)
-    
-    TweenService:Create(flightPanel,
-        TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
-        {
-            Size = UDim2.new(0, 260, 0, 200),
-            Position = UDim2.new(0.5, -130, 0.5, -100)
-        }):Play()
+title.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        panelStart = controlPanel.Position
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
 end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if dragging and input.UserInputType == Enum.UserInputType.Touch then
+        local delta = input.Position - dragStart
+        controlPanel.Position = UDim2.new(
+            panelStart.X.Scale,
+            panelStart.X.Offset + delta.X,
+            panelStart.Y.Scale,
+            panelStart.Y.Offset + delta.Y
+        )
+    end
+end)
+
+-- Закрытие панели
+closePanelBtn.MouseButton1Click:Connect(function()
+    if flying then stopFly() end
+    mainGui.Visible = false
+end)
+
+-- ==============================
+-- ЗАКРЫТИЕ НАЧАЛЬНОГО ЭКРАНА
+-- ==============================
+closeSplashBtn.MouseButton1Click:Connect(function()
+    TweenService:Create(blackBg, TweenInfo.new(0.5, Enum.EasingStyle.Sine), {BackgroundTransparency = 1}):Play()
+    mainText.Visible = false
+    footer.Visible = false
+    closeSplashBtn.Visible = false
+    task.wait(0.5)
+    splashGui:Destroy()
+    mainGui.Visible = true
+end)
+
+print("ROFL | Fly script loaded | by Murd")
