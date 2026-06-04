@@ -1,4 +1,4 @@
--- J.A.R.V.I.S | Fly + Speed | Для Delta Mobile
+-- Rofl Version | Fly Script
 -- by Murd
 
 local Players = game:GetService("Players")
@@ -13,16 +13,71 @@ local flying = false
 local bodyVelocity = nil
 local flySpeed = 50
 
--- ========== GUI ==========
+-- ========== НАЧАЛЬНАЯ НАДПИСЬ НА ВЕСЬ ЭКРАН ==========
+local splashGui = Instance.new("ScreenGui")
+splashGui.Name = "RoflSplash"
+splashGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+splashGui.ResetOnSpawn = false
+splashGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+local splashFrame = Instance.new("Frame")
+splashFrame.Size = UDim2.new(1, 0, 1, 0)
+splashFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+splashFrame.BackgroundTransparency = 0
+splashFrame.Parent = splashGui
+
+local splashText = Instance.new("TextLabel")
+splashText.Size = UDim2.new(1, 0, 0.8, 0)
+splashText.Position = UDim2.new(0, 0, 0.1, 0)
+splashText.BackgroundTransparency = 1
+splashText.Text = "ПЖ АДМИНКУ"
+splashText.TextColor3 = Color3.fromRGB(80, 255, 100)
+splashText.TextSize = 50
+splashText.Font = Enum.Font.GothamBold
+splashText.TextScaled = true
+splashText.Parent = splashFrame
+
+-- Подпись by Murd
+local splashFooter = Instance.new("TextLabel")
+splashFooter.Size = UDim2.new(1, 0, 0, 50)
+splashFooter.Position = UDim2.new(0, 0, 0.85, 0)
+splashFooter.BackgroundTransparency = 1
+splashFooter.Text = "by Murd"
+splashFooter.TextColor3 = Color3.fromRGB(255, 80, 80)
+splashFooter.TextSize = 20
+splashFooter.Font = Enum.Font.GothamBold
+splashFooter.TextScaled = true
+splashFooter.Parent = splashFrame
+
+-- Кнопка закрыть
+local closeSplashBtn = Instance.new("TextButton")
+closeSplashBtn.Size = UDim2.new(0, 120, 0, 40)
+closeSplashBtn.Position = UDim2.new(0.5, -60, 0.92, 0)
+closeSplashBtn.BackgroundColor3 = Color3.fromRGB(80, 255, 100)
+closeSplashBtn.BackgroundTransparency = 0.3
+closeSplashBtn.Text = "ЗАКРЫТЬ"
+closeSplashBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeSplashBtn.TextSize = 16
+closeSplashBtn.Font = Enum.Font.GothamBold
+closeSplashBtn.Parent = splashFrame
+
+local closeSplashCorner = Instance.new("UICorner")
+closeSplashCorner.CornerRadius = UDim.new(0, 10)
+closeSplashCorner.Parent = closeSplashBtn
+
+closeSplashBtn.MouseButton1Click:Connect(function()
+    splashGui:Destroy()
+end)
+
+-- ========== GUI ПОЛЁТА ==========
 local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "JARVIS_Fly"
-screenGui.Parent = game:GetService("CoreGui")
+screenGui.Name = "Rofl_Fly"
+screenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
 screenGui.ResetOnSpawn = false
 
--- Главное окно
 local mainFrame = Instance.new("Frame")
-mainFrame.Size = UDim2.new(0, 220, 0, 140)
-mainFrame.Position = UDim2.new(0.5, -110, 0.5, -70)
+mainFrame.Size = UDim2.new(0, 220, 0, 130)
+mainFrame.Position = UDim2.new(0.5, -110, 0.5, -65)
 mainFrame.BackgroundColor3 = Color3.fromRGB(20, 25, 22)
 mainFrame.BackgroundTransparency = 0.1
 mainFrame.BorderSizePixel = 0
@@ -38,7 +93,7 @@ title.Size = UDim2.new(1, 0, 0, 30)
 title.Position = UDim2.new(0, 0, 0, 0)
 title.BackgroundColor3 = Color3.fromRGB(30, 40, 35)
 title.BackgroundTransparency = 0.1
-title.Text = "J.A.R.V.I.S  |  FLY"
+title.Text = "ROFL  |  FLY"
 title.TextColor3 = Color3.fromRGB(80, 255, 100)
 title.TextSize = 14
 title.Font = Enum.Font.GothamBold
@@ -54,7 +109,7 @@ flyBtn.Size = UDim2.new(0, 100, 0, 40)
 flyBtn.Position = UDim2.new(0.5, -105, 0, 40)
 flyBtn.BackgroundColor3 = Color3.fromRGB(80, 255, 100)
 flyBtn.BackgroundTransparency = 0.3
-flyBtn.Text = "✈️ FLY: OFF"
+flyBtn.Text = "FLY OFF"
 flyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 flyBtn.TextSize = 14
 flyBtn.Font = Enum.Font.GothamBold
@@ -81,7 +136,7 @@ local speedCorner = Instance.new("UICorner")
 speedCorner.CornerRadius = UDim.new(0, 8)
 speedCorner.Parent = speedBox
 
--- Кнопка закрыть
+-- Кнопка закрыть GUI полёта
 local closeBtn = Instance.new("TextButton")
 closeBtn.Size = UDim2.new(0, 60, 0, 25)
 closeBtn.Position = UDim2.new(1, -70, 0, 5)
@@ -97,10 +152,10 @@ local closeCorner = Instance.new("UICorner")
 closeCorner.CornerRadius = UDim.new(0, 8)
 closeCorner.Parent = closeBtn
 
--- Подпись by Murd
+-- Подпись by Murd в основном окне
 local footer = Instance.new("TextLabel")
 footer.Size = UDim2.new(1, 0, 0, 20)
-footer.Position = UDim2.new(0, 0, 0, 120)
+footer.Position = UDim2.new(0, 0, 0, 110)
 footer.BackgroundTransparency = 1
 footer.Text = "by Murd"
 footer.TextColor3 = Color3.fromRGB(255, 80, 80)
@@ -108,7 +163,7 @@ footer.TextSize = 10
 footer.Font = Enum.Font.Gotham
 footer.Parent = mainFrame
 
--- ========== ФУНКЦИИ ПОЛЁТА ==========
+-- ========== ФУНКЦИИ ПОЛЁТА (исправленные) ==========
 local function startFly()
     flying = true
     local char = LocalPlayer.Character
@@ -122,42 +177,8 @@ local function startFly()
     end
     
     bodyVelocity = Instance.new("BodyVelocity")
-    bodyVelocity.MaxForce = Vector3.new(1, 1, 1) * 100000
+    bodyVelocity.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
     bodyVelocity.Parent = hrp
-    
-    -- Управление полётом
-    task.spawn(function()
-        while flying do
-            local direction = Vector3.new()
-            if UserInputService:IsKeyDown(Enum.KeyCode.W) then
-                direction = direction + Vector3.new(0, 0, -1)
-            end
-            if UserInputService:IsKeyDown(Enum.KeyCode.S) then
-                direction = direction + Vector3.new(0, 0, 1)
-            end
-            if UserInputService:IsKeyDown(Enum.KeyCode.A) then
-                direction = direction + Vector3.new(-1, 0, 0)
-            end
-            if UserInputService:IsKeyDown(Enum.KeyCode.D) then
-                direction = direction + Vector3.new(1, 0, 0)
-            end
-            if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
-                direction = direction + Vector3.new(0, 1, 0)
-            end
-            if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then
-                direction = direction + Vector3.new(0, -1, 0)
-            end
-            
-            direction = (Camera.CFrame.RightVector * direction.X + 
-                        Camera.CFrame.UpVector * direction.Y + 
-                        Camera.CFrame.LookVector * direction.Z) * flySpeed
-            
-            if bodyVelocity then
-                bodyVelocity.Velocity = direction
-            end
-            task.wait()
-        end
-    end)
 end
 
 local function stopFly()
@@ -175,40 +196,35 @@ local function stopFly()
     end
 end
 
--- ========== КНОПКИ ==========
+-- Управление полётом
 flyBtn.MouseButton1Click:Connect(function()
     flying = not flying
     if flying then
-        -- Обновляем скорость из поля ввода
         local newSpeed = tonumber(speedBox.Text)
         if newSpeed and newSpeed > 0 then
             flySpeed = newSpeed
         end
-        flyBtn.Text = "✈️ FLY: ON"
+        flyBtn.Text = "FLY ON"
         flyBtn.BackgroundColor3 = Color3.fromRGB(255, 80, 80)
         startFly()
     else
-        flyBtn.Text = "✈️ FLY: OFF"
+        flyBtn.Text = "FLY OFF"
         flyBtn.BackgroundColor3 = Color3.fromRGB(80, 255, 100)
         stopFly()
     end
 end)
 
--- Обновление скорости при изменении текста
+-- Обновление скорости
 speedBox.FocusLost:Connect(function()
     local newSpeed = tonumber(speedBox.Text)
     if newSpeed and newSpeed > 0 then
         flySpeed = newSpeed
-        if flying then
-            -- Если летим, просто обновляем скорость для следующего обновления
-            print("Speed updated to: " .. flySpeed)
-        end
     else
         speedBox.Text = tostring(flySpeed)
     end
 end)
 
--- Закрыть GUI
+-- Закрыть GUI полёта
 closeBtn.MouseButton1Click:Connect(function()
     if flying then
         stopFly()
@@ -216,12 +232,43 @@ closeBtn.MouseButton1Click:Connect(function()
     screenGui:Destroy()
 end)
 
+-- Обновление полёта каждый кадр
+RunService.RenderStepped:Connect(function()
+    if flying and bodyVelocity then
+        local direction = Vector3.new()
+        if UserInputService:IsKeyDown(Enum.KeyCode.W) then
+            direction = direction + Vector3.new(0, 0, -1)
+        end
+        if UserInputService:IsKeyDown(Enum.KeyCode.S) then
+            direction = direction + Vector3.new(0, 0, 1)
+        end
+        if UserInputService:IsKeyDown(Enum.KeyCode.A) then
+            direction = direction + Vector3.new(-1, 0, 0)
+        end
+        if UserInputService:IsKeyDown(Enum.KeyCode.D) then
+            direction = direction + Vector3.new(1, 0, 0)
+        end
+        if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
+            direction = direction + Vector3.new(0, 1, 0)
+        end
+        if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then
+            direction = direction + Vector3.new(0, -1, 0)
+        end
+        
+        direction = (Camera.CFrame.RightVector * direction.X + 
+                    Camera.CFrame.UpVector * direction.Y + 
+                    Camera.CFrame.LookVector * direction.Z) * flySpeed
+        
+        bodyVelocity.Velocity = direction
+    end
+end)
+
 -- Перетаскивание окна
 local dragging = false
 local dragStart, frameStart
 
 title.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+    if input.UserInputType == Enum.UserInputType.Touch then
         dragging = true
         dragStart = input.Position
         frameStart = mainFrame.Position
@@ -234,7 +281,7 @@ title.InputBegan:Connect(function(input)
 end)
 
 UserInputService.InputChanged:Connect(function(input)
-    if dragging and (input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseMovement) then
+    if dragging and input.UserInputType == Enum.UserInputType.Touch then
         local delta = input.Position - dragStart
         mainFrame.Position = UDim2.new(
             frameStart.X.Scale,
@@ -245,4 +292,4 @@ UserInputService.InputChanged:Connect(function(input)
     end
 end)
 
-print("J.A.R.V.I.S | Fly script loaded | by Murd")
+print("Rofl Version | Fly script loaded | by Murd")
